@@ -34,7 +34,6 @@ release-window approval, and merge-queue enrollment after the gate succeeds.
 |---|---|---|
 | `projectbluefin/bluefin` | `promote-testing-to-main.yml` | E2E + cosign + Tuesday window |
 | `projectbluefin/dakota` | `weekly-testing-promotion.yml` | `production` environment |
-| `projectbluefin/bluefin-lts` | `scheduled-lts-release.yml` | `production` environment |
 
 ### Workflow snippet
 
@@ -51,7 +50,7 @@ jobs:
 
 ### Manual GitHub UI setup (environment-gated repos only)
 
-For Dakota and Bluefin LTS, after the workflow change is merged:
+For Dakota, after the workflow change is merged:
 
 1. Go to the repo → **Settings → Environments → New environment**
 2. Name: `production`
@@ -89,7 +88,6 @@ and must not be overloaded as an on/off switch.
 | Repo | Cron (UTC) | `enqueue_promotion` | `use_merge_queue` | `run_e2e` | Notes |
 |---|---|---|---|---|---|
 | `projectbluefin/bluefin` | daily `0 4 * * *` | Tuesday schedule or manual dispatch | `true` | `true` | push and non-Tuesday runs refresh the PR without enqueueing |
-| `projectbluefin/bluefin-lts` | Tuesday `0 4 * * 2` | default `true` | `false` | `false` | direct branch builds; no squash promotion PR |
 | `projectbluefin/dakota` | Tuesday `0 4 * * 2` | schedule or manual dispatch | repository policy | repository policy | weekly release path only |
 
 ### Release-window enrollment
@@ -164,9 +162,6 @@ falls below the success-rate threshold.
 | `projectbluefin/bluefin` | Build | `Testing Images` |
 | `projectbluefin/bluefin` | E2E | `Nightly E2E` |
 | `projectbluefin/bluefin` | Promote | `Promote testing to main` |
-| `projectbluefin/bluefin-lts` | Build | `Build Bluefin LTS` |
-| `projectbluefin/bluefin-lts` | E2E | `Post-Merge E2E - Testing Parity` |
-| `projectbluefin/bluefin-lts` | Promote | `Promote testing to main` |
 | `projectbluefin/dakota` | Build | `Build Bluefin dakota` |
 | `projectbluefin/dakota` | Promote | `Publish Bluefin dakota` |
 | `projectbluefin/common` | Build | `Build` |
@@ -556,7 +551,7 @@ Examples: `ci(promote): bluefin testing → stable 2026-06-11`
 ## Desktop Screenshot
 
 > [!CAUTION]
-> **Auto-merge scheduled for Tuesday 04:00 UTC (bluefin/dakota) / Thursday 04:00 UTC (bluefin-lts).**
+> **Auto-merge scheduled for Tuesday 04:00 UTC (bluefin/dakota).**
 > To block this release: add the `do-not-merge` label to this PR before that time.
 > Remove the label when the issue is resolved -- the next weekly window will pick it up automatically.
 
@@ -584,10 +579,6 @@ workflow skips auto-merge / merge-queue enrollment until the label is removed.
 |---|---|---|
 | `projectbluefin/bluefin` | `reusable-promote-squash.yml` | `testing` |
 | `projectbluefin/dakota` | `reusable-promote.yml` | `main` |
-| `projectbluefin/bluefin-lts` | not yet adopted — see [bluefin-lts#172](https://github.com/projectbluefin/bluefin-lts/issues/172) | — |
-
-**bluefin-lts** uses a different release model (weekly direct builds on `lts` branch, no promotion PR).
-Tracked in bluefin-lts#172.
 
 ---
 
@@ -772,7 +763,7 @@ Renovate keeps pins fresh automatically; the factory health monitor surfaces fai
 
 Use this skill when:
 - Setting up or auditing the machine-enforced 2-human production approval gate in consumer repositories.
-- Modifying promotion schedules, cadence, or merge-queue integration across bluefin, dakota, or bluefin-lts.
+- Modifying promotion schedules, cadence, or merge-queue integration across bluefin or dakota.
 - Investigating factory health monitoring alerts or failure issue generation in `projectbluefin/common`.
 - Debugging or configuring Renovate dependency updates and automated merge rules for first-party or third-party pins.
 - Verifying the end-to-end promotion PR format (Design C) and checklist markers.
