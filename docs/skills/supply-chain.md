@@ -425,7 +425,21 @@ Policy doc: [projectbluefin/common/docs/secrets-policy.md](https://github.com/pr
 
 ### CI enforcement
 
-`pat-ban.yml` blocks any PR to `actions` that introduces a `secrets.XXX` reference not in the approved list above.
+`pat-ban.yml` blocks any PR to `actions` that introduces a reference to a secret not in the approved list above.
+The guard recognises every spelling GitHub Actions resolves to a repository secret and compares names
+case-insensitively (secret names are case-insensitive in GitHub):
+
+- `secrets.NAME`, `secrets.name`, `secrets.Name`
+- `secrets['NAME']` and `secrets["NAME"]`
+
+A dynamic index such as `secrets[format('{0}_PAT', 'X')]` or `secrets[env.NAME]` cannot be resolved
+statically and is rejected outright — secret references must be literal.
+
+Reusable workflows in this repository declare lower-case pass-through secrets under
+`on.workflow_call.secrets` (`token`, `app_id`, `private_key`, `renovate_token`). Those names are
+approved alongside the frozen set so edits to existing pass-through lines keep passing; adding a
+*new* pass-through name is treated like any other new secret and must be added to `APPROVED` in
+`pat-ban.yml` with its review.
 
 **When writing new workflows or composite actions that contain `secrets.XXX` patterns in comments:**
 - Avoid the literal string `secrets.ANYTHING_UPPERCASE` in YAML comments — the scanner reads diff output including comment lines
