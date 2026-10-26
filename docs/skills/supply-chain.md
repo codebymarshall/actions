@@ -420,13 +420,22 @@ Additions require a security review issue in `projectbluefin/common` before prov
 | `BLUEFINBOT_APP_ID` + `BLUEFINBOT_PRIVATE_KEY` | GitHub App | bluefin, bluefin-lts |
 | `CASD_CLIENT_KEY` | TLS client cert for BST CAS | dakota |
 | `SIGNING_SECRET` | Legacy cosign private key | common (pending keyless migration) |
+| `DISCORD_RELEASES_WEBHOOK` | Discord webhook for release announcements | actions (`reusable-execute-release.yml`) |
 
 Policy doc: [projectbluefin/common/docs/secrets-policy.md](https://github.com/projectbluefin/common/blob/main/docs/secrets-policy.md)
 
 ### CI enforcement
 
 `pat-ban.yml` blocks any PR to `actions` that introduces a reference to a secret not in the approved list above.
-The guard recognises every spelling GitHub Actions resolves to a repository secret and compares names
+
+> **Pending [#670](https://github.com/projectbluefin/actions/issues/670):** the bracket/mixed-case
+> matching, dynamic-index rejection, and approved pass-through names described below are the target
+> behaviour of the `pat-ban.yml` scanner change tracked in #670, which must be applied by a maintainer
+> (it touches `.github/workflows/`). Until it lands, the scanner only matches upper-case dot-form
+> references (`grep -oE 'secrets\.[A-Z0-9_]+'`) and `APPROVED` contains only the frozen set above —
+> bracket and lower-case spellings are **not** caught yet. Follow the rules below regardless.
+
+Once #670 lands, the guard recognises every spelling GitHub Actions resolves to a repository secret and compares names
 case-insensitively (secret names are case-insensitive in GitHub):
 
 - `secrets.NAME`, `secrets.name`, `secrets.Name`
