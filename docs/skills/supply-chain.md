@@ -441,8 +441,12 @@ approved alongside the frozen set so edits to existing pass-through lines keep p
 *new* pass-through name is treated like any other new secret and must be added to `APPROVED` in
 `pat-ban.yml` with its review.
 
+Exception: `reusable-sync-branches.yml` declares an upper-case `GH_TOKEN` pass-through secret, which
+is **not** in `APPROVED`. Any PR that adds or edits a line referencing `secrets.GH_TOKEN` fails the
+guard until `GH_TOKEN` is approved or the pass-through is renamed.
+
 **When writing new workflows or composite actions that contain `secrets.XXX` patterns in comments:**
-- Avoid the literal string `secrets.ANYTHING_UPPERCASE` in YAML comments — the scanner reads diff output including comment lines
+- Avoid any literal `secrets.<name>` spelling (any case, dot or bracket form) in YAML comments — the scanner reads diff output including comment lines
 - The scanner filters `^+[[:space:]]*#` lines, but only when the filter is correctly applied
 - If you must document a secret name in a comment, write it without the `secrets.` prefix (e.g. `# GITHUB_TOKEN — built-in`)
 
