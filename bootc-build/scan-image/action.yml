@@ -31,6 +31,11 @@ inputs:
     required: false
     default: ""
 
+outputs:
+  os-packages-scanned:
+    description: "false when Trivy could not identify the OS family and scanned no OS packages (RPMs); true otherwise."
+    value: ${{ steps.summarize-cves.outputs.os-packages-scanned }}
+
 runs:
   using: "composite"
   steps:
